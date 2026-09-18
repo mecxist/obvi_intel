@@ -1,3 +1,5 @@
+mod microphone;
+
 use serde_json::{json, Value};
 use std::path::PathBuf;
 use std::process::Command;
@@ -43,7 +45,7 @@ fn get_config() -> Value {
         "meeting_capture_available": false,
         "tacetCompanionInstalled": tacet_installed,
         "tacet_companion_installed": tacet_installed,
-        "dictationAvailable": false,
+        "dictationAvailable": true,
         "intelCompatibilityBuild": true
     })
 }
@@ -97,13 +99,19 @@ fn meeting_window_status() -> Value {
 }
 
 #[tauri::command]
-fn dictation_request_access() -> bool { false }
+fn dictation_request_access() -> bool {
+    microphone::request_access()
+}
 
 #[tauri::command]
-fn dictation_start() -> bool { false }
+fn dictation_start() -> bool {
+    microphone::request_access()
+}
 
 #[tauri::command]
-fn dictation_stop() -> bool { true }
+fn dictation_stop() -> bool {
+    true
+}
 
 #[tauri::command]
 fn quick_bar() -> bool { true }

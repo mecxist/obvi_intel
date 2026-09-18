@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Obvious Intel uses the microphone for speech to text in chat.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Obvious Intel uses speech recognition for speech to text in chat.</string>
+</dict>
+</plist>
