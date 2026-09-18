@@ -27,13 +27,15 @@ The wrapper is intended to support the main Obvious experience, including:
 - links that need to open in your browser
 - supported desktop features used by the Obvious web interface
 
-### Known limitation
+### Meeting capture on Intel
 
-**Meeting capture / desktop recording is not expected to work on Intel Macs right now.**
+Recall.ai's official Desktop Recording SDK does not support Intel Macs, so the default Obvious Intel build continues to report the upstream meeting-capture capability as unavailable.
 
-That feature depends on desktop recording software that currently requires Apple Silicon. Obvious Intel reports the feature as unavailable instead of pretending it is supported.
+This repository now also contains an **optional experimental Intel meeting-capture add-on**. It is an independent x86_64 native capture helper built with Apple's ScreenCaptureKit and AVFoundation APIs. It can capture a selected meeting window or display, system audio, and microphone audio locally.
 
-The rest of Obvious can still be tested and used independently of that feature.
+It is not a port or replacement distribution of Recall.ai's private native SDK, and it does not currently reproduce Recall.ai's meeting detection, participant metadata, hosted transcription, or upload-token pipeline.
+
+The normal Obvious Intel build remains unchanged unless you explicitly choose the add-on build.
 
 ---
 
@@ -101,7 +103,7 @@ macOS may prevent a newly downloaded command file from running until you give it
 Copy and paste this into Terminal, then press **Return**:
 
 ```bash
-chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh
+chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh ./scripts/build-meeting-addon.sh ./scripts/build-intel-with-meeting-addon.sh ./scripts/meeting-addon-control.sh
 ```
 
 **Nothing may appear to happen after you press Return. That is normal.**
@@ -169,7 +171,61 @@ Good first things to test are:
 4. Click links that should open in your normal browser.
 5. Use Obvious normally and note anything that does not work.
 
-**Meeting recording is a known limitation on Intel Macs and is not expected to work yet.**
+The official Recall.ai meeting-recording path remains unavailable on Intel. If you want to test the experimental local Intel capture add-on, see **Optional Intel Meeting Capture Add-on** below.
+
+---
+
+# Optional Intel Meeting Capture Add-on
+
+This is optional. The normal build above does not include it.
+
+The add-on requires **macOS 13 or newer** and Apple's command-line developer tools.
+
+To build Obvious Intel with the native x86_64 capture helper packaged inside it:
+
+```bash
+./scripts/build-intel-with-meeting-addon.sh
+```
+
+That produces the normal app bundle plus:
+
+```text
+ObviousIntelWithMeetingCapture.dmg
+```
+
+The helper is deliberately controlled locally rather than granting the hosted Obvious web page unrestricted screen/microphone capture commands.
+
+Check the add-on:
+
+```bash
+./scripts/meeting-addon-control.sh status
+```
+
+Request Screen Recording and Microphone permissions:
+
+```bash
+./scripts/meeting-addon-control.sh permissions
+```
+
+List capturable windows/displays:
+
+```bash
+./scripts/meeting-addon-control.sh sources
+```
+
+Start a local recording using a source id returned above:
+
+```bash
+./scripts/meeting-addon-control.sh record "window:1234" "$HOME/Desktop/obvious-recording" true
+```
+
+Press **Control-C** to stop and finalize the recording.
+
+For architecture, limitations, and developer details, see:
+
+```text
+docs/meeting-capture-intel.md
+```
 
 ---
 
@@ -290,11 +346,11 @@ If you report the problem, include:
 - what happened instead
 - any error message you saw
 
-## Meeting recording does not work
+## The Obvious meeting button still says recording is unavailable
 
-This is currently expected on Intel Macs.
+That is expected. The official Recall.ai Desktop Recording SDK does not support Intel Macs, and this wrapper does not impersonate that SDK.
 
-The recording software used for this feature does not currently provide the Intel Mac support needed by this wrapper.
+If you built the optional Intel add-on, use the local add-on controls described above while the direct Obvious/Recall integration is still being mapped.
 
 ## The build stops with an error
 
@@ -352,6 +408,14 @@ A development compatibility workflow is:
 ./scripts/inspect-official.sh /path/to/Obvious_0.34.1_aarch64.dmg
 ./scripts/build-intel.sh
 ```
+
+To include the optional Intel meeting-capture helper:
+
+```bash
+./scripts/build-intel-with-meeting-addon.sh
+```
+
+The wrapper continues to expose the upstream Recall capability as unsupported, while `get_config` and `meeting_window_status` report whether the independent Intel add-on is packaged. This keeps capability reporting accurate while the remaining Obvious-to-capture integration is developed.
 
 Then launch **Obvious Intel.app**, enable Web Inspector/devtools if needed, and test normal product flows. Missing Tauri invocations can be implemented as they are discovered.
 
