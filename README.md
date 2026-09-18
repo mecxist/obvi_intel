@@ -1,20 +1,20 @@
-# Obvious Intel Wrapper for macOS
+# Obvious Intel Wrapper for macOS (Unofficial)
 
 Built by **m.j. zilla**  
 subscribe for more tools and insights [mecxist.substack.com](https://mecxist.substack.com/)
 
 ## Disclaimer
 
-This is an **unofficial compatibility wrapper** and is provided for **educational and testing purposes**.
-It is not affiliated with or endorsed by Obvious.
+This is an **unofficial compatibility wrapper** provided for **educational and testing purposes**.
+It is not affiliated with or endorsed by Obvious. Use at your own risk.
 
 ## What This Project Does
 
-Obvious currently distributes its desktop app for Apple Silicon Macs (`arm64`).
+Obvious currently distributes its desktop app for Apple Silicon Macs.
 
-This project builds an **Intel-compatible (`x86_64`) macOS wrapper** that loads the Obvious web application inside a native Tauri desktop window and recreates the desktop commands the web app expects where possible.
+This project lets you build a version called **Obvious Intel** that can run on an Intel Mac.
 
-This does **not** convert the original Apple Silicon Obvious executable into an Intel executable. It creates a separate Intel-compatible desktop wrapper.
+It does **not** modify or convert the original Obvious app. Instead, it creates a separate Intel-compatible desktop app that loads Obvious and recreates supported desktop features where possible.
 
 ### What should work
 
@@ -25,41 +25,163 @@ The wrapper is intended to support the main Obvious experience, including:
 - projects and agents
 - files and workbooks
 - links that need to open in your browser
-- basic desktop app commands used by the web interface
+- supported desktop features used by the Obvious web interface
 
 ### Known limitation
 
 **Meeting capture / desktop recording is not expected to work on Intel Macs right now.**
 
-Obvious uses functionality associated with the Recall.ai Desktop Recording SDK, whose macOS desktop recording support is Apple Silicon-only. The Intel wrapper reports this capability as unavailable rather than pretending it is supported.
+That feature depends on desktop recording software that currently requires Apple Silicon. Obvious Intel reports the feature as unavailable instead of pretending it is supported.
 
-The rest of Obvious can still be tested independently of that feature.
+The rest of Obvious can still be tested and used independently of that feature.
 
-## Files
+---
 
-The important files are:
+# Quick Start
 
-- `scripts/build-intel.sh` - builds the Intel version of the app
-- `scripts/inspect-official.sh` - optional tool for inspecting an official Obvious Apple Silicon DMG
-- `src-tauri/` - Tauri desktop wrapper
-- `README.md` - this guide
+You do **not** need to know how to code to try this.
 
-## Requirements
+You will use the **Terminal** app on your Mac, but you can copy and paste the commands below exactly as shown.
+
+## Before you start
 
 You need:
 
 - an **Intel Mac**
 - macOS
 - an internet connection
-- Apple's Command Line Tools
-- Rust / Cargo
-- Node.js + npm
+- this project downloaded to your Mac
 
-If you already use development tools on your Mac, you may already have most of these installed.
+The builder also uses a few free developer tools. If one of them is missing, the build may stop and tell you what is missing. See **Setup Help** farther down this page.
 
-### Check whether the required tools are installed
+## 1. Download this project
 
-Open **Terminal** and copy/paste:
+Download the repository from GitHub.
+
+If it downloads as a ZIP file, double-click the ZIP to open it.
+
+You should now have a folder for this project somewhere on your Mac, usually in **Downloads**.
+
+## 2. Open Terminal
+
+1. Press **Command + Space** on your keyboard.
+2. Type **Terminal**.
+3. Press **Return**.
+
+A Terminal window will open.
+
+## 3. Tell Terminal where you downloaded this project
+
+The easiest way is to use Finder instead of typing the folder location yourself.
+
+1. In Terminal, type:
+
+```bash
+cd 
+```
+
+Make sure there is a space after `cd`.
+
+2. Open Finder and locate the project folder you downloaded.
+3. Drag that folder directly into the Terminal window.
+4. Press **Return**.
+
+Terminal is now working inside the correct folder.
+
+> If your folder is named `obvious-intel-wrapper` and is in Downloads, you can also paste this instead:
+>
+> ```bash
+> cd ~/Downloads/obvious-intel-wrapper
+> ```
+
+## 4. Allow the included builder to run
+
+macOS may prevent a newly downloaded command file from running until you give it permission.
+
+Copy and paste this into Terminal, then press **Return**:
+
+```bash
+chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh
+```
+
+**Nothing may appear to happen after you press Return. That is normal.**
+
+You only need to do this once for this downloaded copy of the project.
+
+## 5. Build Obvious Intel
+
+Copy and paste this into Terminal, then press **Return**:
+
+```bash
+./scripts/build-intel.sh
+```
+
+Terminal will begin showing lines of text while it builds the app. That is normal.
+
+Keep the Terminal window open until the command finishes and you can type into Terminal again.
+
+If the build succeeds, it creates:
+
+```text
+Obvious Intel.app
+```
+
+## 6. Find the finished app
+
+The finished app is normally placed inside the project's build folder.
+
+To open that folder without searching for it yourself, copy and paste this into Terminal:
+
+```bash
+open src-tauri/target/x86_64-apple-darwin/release/bundle/macos/
+```
+
+A Finder window should open showing:
+
+```text
+Obvious Intel.app
+```
+
+## 7. Open Obvious Intel
+
+Double-click **Obvious Intel.app**.
+
+Because this is an unofficial app you built locally, macOS may block it the first time.
+
+If macOS says the app cannot be opened:
+
+1. Find **Obvious Intel.app** in Finder.
+2. Right-click it, or hold **Control** and click it.
+3. Choose **Open**.
+4. Choose **Open** again if macOS asks for confirmation.
+
+You should only need to do this once.
+
+## 8. Sign in and try Obvious
+
+Once the app opens, sign in with your normal Obvious account.
+
+Good first things to test are:
+
+1. Open an existing project.
+2. Create or open an agent.
+3. Open files or workbooks.
+4. Click links that should open in your normal browser.
+5. Use Obvious normally and note anything that does not work.
+
+**Meeting recording is a known limitation on Intel Macs and is not expected to work yet.**
+
+---
+
+# Setup Help
+
+If the build works, you can ignore this section.
+
+Use this section only if Terminal tells you that something is missing.
+
+## Check the tools the builder needs
+
+Copy and paste these commands into Terminal one at a time:
 
 ```bash
 xcode-select -p
@@ -69,106 +191,130 @@ node --version
 npm --version
 ```
 
-If each command prints a path or version number, you are ready to build.
+If a command shows a version number or file location, that tool is installed.
 
-## Quick Start
+If Terminal says **command not found**, use the matching instructions below.
 
-You do **not** need to understand Rust, Tauri, or the Obvious source code to try this.
+### If Apple Command Line Tools are missing
 
-### 1) Download this repository
-
-Download the repository from GitHub and unzip it if necessary.
-
-For example, you may end up with a folder like:
-
-```text
-~/Downloads/obvious-intel-wrapper/
-```
-
-### 2) Open Terminal
-
-On your Mac:
-
-1. Open **Spotlight** with `Command + Space`
-2. Type `Terminal`
-3. Press **Return**
-
-### 3) Go to the wrapper folder
-
-If the folder is in Downloads, copy/paste:
+Paste:
 
 ```bash
-cd ~/Downloads/obvious-intel-wrapper
+xcode-select --install
 ```
 
-If you put the folder somewhere else, the easiest method is:
+Follow the installation window that appears. When installation is complete, close and reopen Terminal and try the build again.
 
-1. Type `cd ` into Terminal, including the space after `cd`
-2. Drag the `obvious-intel-wrapper` folder from Finder into the Terminal window
-3. Press **Return**
+### If Terminal says `rustc: command not found` or `cargo: command not found`
 
-### 4) Make the build script executable
+Rust is missing from your Mac.
 
-Copy/paste:
+Install Rust, then close and reopen Terminal before trying the build again.
+
+### If Terminal says `node: command not found` or `npm: command not found`
+
+Node.js is missing from your Mac.
+
+Install Node.js, then close and reopen Terminal before trying the build again.
+
+### If Terminal says the Intel Rust target is missing
+
+Paste:
 
 ```bash
-chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh
+rustup target add x86_64-apple-darwin
 ```
 
-You only need to do this once.
-
-### 5) Build the Intel version
-
-Copy/paste:
+Then start the build again:
 
 ```bash
 ./scripts/build-intel.sh
 ```
 
-The script builds the app for:
+---
 
-```text
-x86_64-apple-darwin
+# Troubleshooting
+
+## Terminal says `Permission denied`
+
+This usually means Step 4 was skipped.
+
+Paste:
+
+```bash
+chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh
 ```
 
-When the build finishes successfully, look for:
+Then try the build again:
 
-```text
-Obvious Intel.app
+```bash
+./scripts/build-intel.sh
 ```
 
-inside the Tauri build output directory.
+## Terminal says `No such file or directory`
 
-A typical Tauri build places the app under a path similar to:
+Terminal is probably not inside the project folder.
 
-```text
-src-tauri/target/x86_64-apple-darwin/release/bundle/macos/
+Go back to **Step 3** and drag the project folder into Terminal after typing `cd `.
+
+Then try the command again.
+
+## The build finished, but I cannot find Obvious Intel
+
+Paste:
+
+```bash
+open src-tauri/target/x86_64-apple-darwin/release/bundle/macos/
 ```
 
-### 6) Open Obvious Intel
+That should open the folder containing **Obvious Intel.app**.
 
-Double-click:
+## macOS will not open the app
 
-```text
-Obvious Intel.app
-```
+Right-click **Obvious Intel.app** in Finder and choose **Open** instead of double-clicking it.
 
-Because this is an unofficial locally built app, macOS may block it the first time.
+If macOS still blocks it, open:
 
-If that happens:
+**System Settings → Privacy & Security**
 
-1. Find `Obvious Intel.app` in Finder
-2. Right-click it
-3. Choose **Open**
-4. Choose **Open** again if macOS asks for confirmation
+Look for a message about **Obvious Intel** and choose the option that allows it to open.
 
-You should only need to do this once.
+## Obvious opens, but a feature does nothing
 
-## Optional: Inspect the Official Obvious App
+That may be a feature the Intel wrapper does not support yet.
 
-You do **not** need the official Apple Silicon DMG just to build the wrapper.
+If you report the problem, include:
 
-The inspection script is included for development and compatibility testing. If you have an official Obvious DMG, you can inspect it with:
+- what you clicked
+- what you expected to happen
+- what happened instead
+- any error message you saw
+
+## Meeting recording does not work
+
+This is currently expected on Intel Macs.
+
+The recording software used for this feature does not currently provide the Intel Mac support needed by this wrapper.
+
+## The build stops with an error
+
+Look at the final few lines shown in Terminal. The last error is usually the most useful one.
+
+If you need help, copy the error message before closing Terminal.
+
+Still stuck? Message me on Substack: [mecxist.substack.com](https://mecxist.substack.com/)
+
+---
+
+# Optional: Inspect the Official Obvious App
+
+**Most users do not need this section.**
+
+You do not need the official Apple Silicon DMG to build Obvious Intel.
+
+This tool is included for developers who want to compare the wrapper with a current official Obvious release.
+
+If you have an official Obvious DMG, run:
 
 ```bash
 ./scripts/inspect-official.sh /path/to/Obvious_0.34.1_aarch64.dmg
@@ -180,114 +326,17 @@ For example, if the DMG is in Downloads:
 ./scripts/inspect-official.sh ~/Downloads/Obvious_0.34.1_aarch64.dmg
 ```
 
-The script creates:
+The tool creates:
 
 ```text
 obvious-official-report.txt
 ```
 
-This report helps identify changes in future Obvious releases that may need to be added to the Intel wrapper.
+This can help identify changes in future Obvious releases that may need to be added to the Intel wrapper.
 
-## First Things to Test
+---
 
-After the app opens, try:
-
-1. Sign in to your Obvious account
-2. Open an existing project
-3. Create or open an agent
-4. Open files or workbooks
-5. Test links that should open in your normal browser
-6. Use the app normally and note anything that fails
-
-If the web interface calls a desktop command the wrapper does not yet implement, that command can be added to the Tauri compatibility layer.
-
-## Troubleshooting
-
-### `Permission denied`
-
-Run:
-
-```bash
-chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh
-```
-
-Then try again:
-
-```bash
-./scripts/build-intel.sh
-```
-
-### `cargo: command not found` or `rustc: command not found`
-
-Rust is not installed or is not available in your Terminal environment.
-
-Install Rust, close and reopen Terminal, then run the build again.
-
-### `node: command not found` or `npm: command not found`
-
-Install Node.js, close and reopen Terminal, then run the build again.
-
-### Apple Command Line Tools are missing
-
-Run:
-
-```bash
-xcode-select --install
-```
-
-Complete Apple's installer, then run the build again.
-
-### Intel target is missing
-
-Run:
-
-```bash
-rustup target add x86_64-apple-darwin
-```
-
-Then run:
-
-```bash
-./scripts/build-intel.sh
-```
-
-### The app builds but macOS will not open it
-
-Right-click `Obvious Intel.app` in Finder and choose **Open** instead of double-clicking it.
-
-If macOS still blocks the locally built app, check **System Settings → Privacy & Security** for an option to allow it to open.
-
-### Obvious opens but a feature does nothing
-
-That may mean the web app is calling a Tauri desktop command that the Intel wrapper does not implement yet.
-
-If possible, record:
-
-- what you clicked
-- what you expected to happen
-- any error shown in the app
-- any error shown in Terminal or Web Inspector
-
-That information can be used to add the missing compatibility command.
-
-### Meeting recording does not work
-
-This is currently expected on Intel Macs. The desktop recording dependency used for this capability does not currently provide the Intel macOS support needed by this wrapper.
-
-### Build fails partway through
-
-Scroll to the last error shown in Terminal. The final error is usually the most useful part.
-
-If you are opening an issue, include that error along with:
-
-```bash
-uname -m
-sw_vers
-rustc --version
-node --version
-```
-
-## For Developers
+# For Developers
 
 The wrapper is a **Tauri 2** application built for:
 
@@ -297,21 +346,17 @@ x86_64-apple-darwin
 
 It loads the Obvious web application and includes an initial compatibility layer for desktop commands such as configuration, onboarding state, external links, logging, capability checks, and selected Obvious desktop UI commands.
 
-The recommended compatibility workflow is:
+A development compatibility workflow is:
 
 ```bash
 ./scripts/inspect-official.sh /path/to/Obvious_0.34.1_aarch64.dmg
 ./scripts/build-intel.sh
 ```
 
-Then launch `Obvious Intel.app`, enable Web Inspector/devtools if needed, and test the normal product flows. Missing Tauri invocations can be implemented as they are discovered.
+Then launch **Obvious Intel.app**, enable Web Inspector/devtools if needed, and test normal product flows. Missing Tauri invocations can be implemented as they are discovered.
 
 ## Why This Exists
 
 Obvious currently targets Apple Silicon Macs. This project explores whether the parts of the product that are not inherently Apple Silicon-specific can remain usable on Intel hardware through a compatibility wrapper.
 
 It is intended to extend access to otherwise capable Intel Macs without bypassing Obvious authentication, subscriptions, or account controls.
-
----
-
-Still stuck? Message me on Substack: [mecxist.substack.com](https://mecxist.substack.com/)
