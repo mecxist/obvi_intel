@@ -1,7 +1,31 @@
 use serde_json::{json, Value};
+use std::path::PathBuf;
 use std::process::Command;
 
 const APP_WEB_URL: &str = "https://app.obvious.ai";
+const MEETING_ADDON_BINARY: &str = "obvious-intel-meeting-capture";
+
+fn meeting_addon_path() -> Option<PathBuf> {
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(contents_dir) = exe.parent().and_then(|macos| macos.parent()) {
+            let bundled = contents_dir.join("Resources").join(MEETING_ADDON_BINARY);
+            if bundled.is_file() {
+                return Some(bundled);
+            }
+        }
+    }
+
+    let development = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .map(|root| {
+            root.join("addons")
+                .join("meeting-capture-intel")
+                .join("bin")
+                .join(MEETING_ADDON_BINARY)
+        });
+
+    development.filter(|path| path.is_file())
+}
 
 #[tauri::command]
 fn app_web_url() -> String {
@@ -10,6 +34,8 @@ fn app_web_url() -> String {
 
 #[tauri::command]
 fn get_config() -> Value {
+    let addon_installed = meeting_addon_path().is_some();
+
     json!({
         "appWebUrl": APP_WEB_URL,
         "app_web_url": APP_WEB_URL,
@@ -20,6 +46,8 @@ fn get_config() -> Value {
         "version": "0.34.1-intel-compat",
         "meetingCaptureAvailable": false,
         "meeting_capture_available": false,
+        "intelMeetingCaptureAddonInstalled": addon_installed,
+        "intel_meeting_capture_addon_installed": addon_installed,
         "dictationAvailable": false,
         "intelCompatibilityBuild": true
     })
@@ -27,7 +55,6 @@ fn get_config() -> Value {
 
 #[tauri::command]
 fn is_onboarded() -> bool {
-    // Skip native-only onboarding. Account/workspace onboarding still lives in the web app.
     true
 }
 
@@ -54,16 +81,21 @@ fn open_external(target: String) -> Result<(), String> {
 
 #[tauri::command]
 fn frontend_log() -> bool {
-    // Payload fields are intentionally ignored in the compatibility build.
     true
 }
 
 #[tauri::command]
 fn meeting_window_status() -> Value {
+    let addon_installed = meeting_addon_path().is_some();
+
     json!({
         "supported": false,
         "available": false,
-        "reason": "Recall.ai Desktop Recording SDK does not support Intel macOS"
+        "reason": "Recall.ai Desktop Recording SDK does not support Intel macOS",
+        "intelAddonInstalled": addon_installed,
+        "intel_addon_installed": addon_installed,
+        "intelAddonMode": if addon_installed { "local-native-capture" } else { "not-installed" },
+        "intelAddonDocs": "docs/meeting-capture-intel.md"
     })
 }
 
