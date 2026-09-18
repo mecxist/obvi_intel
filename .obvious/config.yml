@@ -1,0 +1,7 @@
+# obvious repository policy
+repo: mecxist/obvi_intel
+defaultBranch: main
+merge:
+  method: merge
+branchProtection:
+  requireHumanMerge: true
