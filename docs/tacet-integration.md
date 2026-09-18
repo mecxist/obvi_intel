@@ -1,6 +1,6 @@
 # Tacet companion integration
 
-Obvious Intel uses Tacet as the recommended meeting recording and recap companion on Intel Macs.
+**Obvious Intel.app**, the wrapper created by this builder, uses Tacet as the recommended meeting recording and recap companion on Intel Macs.
 
 Tacet is an independent open-source project maintained at:
 
@@ -10,7 +10,7 @@ It is licensed under the MIT License.
 
 ## Why Tacet
 
-Tacet already provides the parts that would otherwise need to be rebuilt inside this repository:
+Tacet already provides the parts that would otherwise need to be rebuilt inside this builder:
 
 - Intel Mac support
 - ScreenCaptureKit-based system audio capture
@@ -33,7 +33,7 @@ Commands are newline-delimited JSON sent over stdin.
 
 ## Installation
 
-From the Obvious Intel repository:
+From this builder repository:
 
 ```bash
 chmod +x ./scripts/setup-tacet.sh ./scripts/run-tacet.sh
@@ -63,20 +63,20 @@ Tacet's setup chooses `faster-whisper` automatically on Intel Macs.
 
 ## Integration boundary
 
-The current integration intentionally treats Tacet as a companion process rather than copying its source into Obvious Intel.
+The current integration intentionally treats Tacet as a companion process rather than copying its source into this builder.
 
 That gives us several advantages:
 
 1. Tacet can continue receiving upstream fixes.
 2. Intel recording bugs can be contributed back to Tacet rather than maintained twice.
-3. Obvious Intel stays focused on Obvious compatibility.
+3. This builder stays focused on producing an Obvious compatibility wrapper.
 4. The hosted Obvious web app is not granted arbitrary direct control of local screen and microphone capture.
 5. Tacet's MIT licensing and attribution remain clear.
 
-The next integration step, if needed, is a narrow adapter between Obvious Intel and Tacet's CaptureHelper protocol rather than a new recorder implementation.
+The next integration step, if needed, is a narrow adapter between **Obvious Intel.app** and Tacet's CaptureHelper protocol rather than a new recorder implementation.
 
 ## Recall.ai compatibility
 
 This does not make Tacet a drop-in binary replacement for Recall.ai's Desktop Recording SDK.
 
-Obvious currently expects Recall-specific desktop behavior. The wrapper therefore continues to report the official Recall recording capability as unavailable on Intel while identifying Tacet as the recommended companion meeting engine.
+Obvious currently expects Recall-specific desktop behavior. **Obvious Intel.app** therefore continues to report the official Recall recording capability as unavailable on Intel while identifying Tacet as the recommended companion meeting engine.

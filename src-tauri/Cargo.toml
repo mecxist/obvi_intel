@@ -1,7 +1,7 @@
 [package]
 name = "obvious-intel-wrapper"
 version = "0.1.0"
-description = "Experimental Intel macOS compatibility shell for Obvious Desktop"
+description = "Builder for an Intel-compatible desktop wrapper for Obvious on x86_64 Macs"
 edition = "2021"
 
 [build-dependencies]

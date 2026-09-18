@@ -1,24 +1,36 @@
-# Obvious Intel Wrapper for macOS (Unofficial)
+# Obvious Intel Builder for macOS (Unofficial)
+
+Build an Intel-compatible desktop wrapper for Obvious on x86_64 Macs.
+
+![Obvious Intel running on an Intel iMac](docs/images/obvious-intel-running-on-intel-imac.png)
 
 Built by **m.j. zilla**  
 subscribe for more tools and insights [mecxist.substack.com](https://mecxist.substack.com/)
 
 ## Disclaimer
 
-This is an **unofficial compatibility wrapper** provided for **educational and testing purposes**.
+This is an **unofficial builder** provided for **educational and testing purposes**.
 It is not affiliated with or endorsed by Obvious. Use at your own risk.
 
-## What This Project Does
+The builder creates a separate Intel-compatible desktop wrapper. It does **not** modify or convert the original Obvious app.
 
-Obvious currently distributes its desktop app for Apple Silicon Macs.
+## What You're Downloading
 
-This project lets you build a version called **Obvious Intel** that can run on an Intel Mac.
+This repository is not the finished Obvious Intel app.
 
-It does **not** modify or convert the original Obvious app. Instead, it creates a separate Intel-compatible desktop app that loads Obvious and recreates supported desktop features where possible.
+It contains the source code and build tools used to create **Obvious Intel.app**, an Intel-compatible desktop wrapper for Obvious.
 
-### What should work
+In short:
 
-The wrapper is intended to support the main Obvious experience, including:
+**this repository = the builder**
+
+**Obvious Intel.app = the wrapper the builder creates**
+
+The builder creates an x86_64 macOS application locally on your Intel Mac.
+
+### What the wrapper is intended to support
+
+**Obvious Intel.app** is intended to support the main Obvious experience, including:
 
 - signing in
 - opening the Obvious app
@@ -29,11 +41,15 @@ The wrapper is intended to support the main Obvious experience, including:
 
 ### Meeting capture on Intel
 
-Recall.ai's official Desktop Recording SDK does not support Intel Macs, so Obvious Intel continues to report that upstream recording capability as unavailable.
+Recall.ai does not provide the x86_64 Intel Mac build required for this builder, so the official Obvious meeting-recording path remains unavailable.
 
-Rather than maintain a second custom recorder, this project now recommends **Tacet** as the Intel meeting-recording and recap companion. Tacet is an independent MIT-licensed open-source project with explicit Intel Mac support. It captures system audio and microphone audio, can collect screen frames, uses faster-whisper on Intel, and adds transcription, speaker identification, summaries, and meeting analysis.
+**[Tacet](https://github.com/Tacetapp/tacet)** is the open-source companion this builder uses instead of Recall for Intel meeting capture, recording, and recap. The Intel companion work is on [`feature/intel-meeting-capture-addon`](https://github.com/mecxist/obvi_intel/tree/feature/intel-meeting-capture-addon), and that work is already included in the default builder on [`main`](https://github.com/mecxist/obvi_intel).
 
-Obvious Intel does not copy or rename Tacet. The integration keeps Tacet as an upstream project so it can receive its own updates and so fixes can be contributed back.
+It is not a drop-in replacement for Recall inside the Obvious meeting button. **Obvious Intel.app** still reports the official Recall capability as unavailable, and Tacet is launched beside it for recording and recap.
+
+Tacet is an independent MIT-licensed project with explicit Intel Mac support. It can capture system audio and microphone audio, collect screen frames, transcribe with faster-whisper on Intel, and add speaker identification, summaries, and meeting analysis.
+
+The builder does not copy or rename Tacet. Tacet stays a separate upstream project so it can receive its own updates.
 
 ---
 
@@ -50,17 +66,17 @@ You need:
 - an **Intel Mac**
 - macOS
 - an internet connection
-- this project downloaded to your Mac
+- this builder downloaded to your Mac
 
 The builder also uses a few free developer tools. If one of them is missing, the build may stop and tell you what is missing. See **Setup Help** farther down this page.
 
-## 1. Download this project
+## 1. Download this builder
 
 Download the repository from GitHub.
 
 If it downloads as a ZIP file, double-click the ZIP to open it.
 
-You should now have a folder for this project somewhere on your Mac, usually in **Downloads**.
+You should now have a folder for this builder somewhere on your Mac, usually in **Downloads**.
 
 ## 2. Open Terminal
 
@@ -70,7 +86,7 @@ You should now have a folder for this project somewhere on your Mac, usually in 
 
 A Terminal window will open.
 
-## 3. Tell Terminal where you downloaded this project
+## 3. Tell Terminal where you downloaded this builder
 
 The easiest way is to use Finder instead of typing the folder location yourself.
 
@@ -82,16 +98,16 @@ cd
 
 Make sure there is a space after `cd`.
 
-2. Open Finder and locate the project folder you downloaded.
+2. Open Finder and locate the builder folder you downloaded.
 3. Drag that folder directly into the Terminal window.
 4. Press **Return**.
 
 Terminal is now working inside the correct folder.
 
-> If your folder is named `obvious-intel-wrapper` and is in Downloads, you can also paste this instead:
+> If GitHub named the folder `obvi_intel` and it is in Downloads, you can also paste this instead:
 >
 > ```bash
-> cd ~/Downloads/obvious-intel-wrapper
+> cd ~/Downloads/obvi_intel
 > ```
 
 ## 4. Allow the included builder to run
@@ -104,9 +120,11 @@ Copy and paste this into Terminal, then press **Return**:
 chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh ./scripts/setup-tacet.sh ./scripts/run-tacet.sh
 ```
 
+This tells macOS that these included command files are allowed to run on your Mac.
+
 **Nothing may appear to happen after you press Return. That is normal.**
 
-You only need to do this once for this downloaded copy of the project.
+You only need to do this once for this downloaded copy of the builder.
 
 ## 5. Build Obvious Intel
 
@@ -116,7 +134,7 @@ Copy and paste this into Terminal, then press **Return**:
 ./scripts/build-intel.sh
 ```
 
-Terminal will begin showing lines of text while it builds the app. That is normal.
+Terminal will begin showing lines of text while it builds the wrapper. That is normal.
 
 Keep the Terminal window open until the command finishes and you can type into Terminal again.
 
@@ -128,7 +146,7 @@ Obvious Intel.app
 
 ## 6. Find the finished app
 
-The finished app is normally placed inside the project's build folder.
+The finished wrapper is normally placed inside the builder's build folder.
 
 To open that folder without searching for it yourself, copy and paste this into Terminal:
 
@@ -175,7 +193,7 @@ The official Recall.ai meeting-recording path remains unavailable on Intel. For 
 
 # Tacet Companion
 
-Tacet provides the meeting capture and recap stack instead of duplicating that functionality inside this repository.
+Tacet provides Intel meeting capture and recap as a companion app. It is part of the default builder on `main`, and it is not a replacement for Recall inside the Obvious meeting button.
 
 Install or update Tacet:
 
@@ -198,13 +216,13 @@ cd ~/.local/share/obvious-intel/tacet
 
 On an Intel Mac, Tacet selects its CPU-compatible `faster-whisper` transcription path.
 
-After setup, launch it from the Obvious Intel repository with:
+After setup, launch it from this builder with:
 
 ```bash
 ./scripts/run-tacet.sh
 ```
 
-Tacet remains a separate upstream project rather than being vendored into Obvious Intel. See `docs/tacet-integration.md` for the integration architecture and the documented CaptureHelper protocol.
+Tacet remains a separate upstream project rather than being copied into this builder. See the [Tacet repository](https://github.com/Tacetapp/tacet), this builder's [Intel meeting-capture branch](https://github.com/mecxist/obvi_intel/tree/feature/intel-meeting-capture-addon), and `docs/tacet-integration.md` for the integration architecture and the documented CaptureHelper protocol.
 
 ---
 
@@ -277,7 +295,7 @@ This usually means Step 4 was skipped.
 Paste:
 
 ```bash
-chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh
+chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh ./scripts/setup-tacet.sh ./scripts/run-tacet.sh
 ```
 
 Then try the build again:
@@ -288,9 +306,9 @@ Then try the build again:
 
 ## Terminal says `No such file or directory`
 
-Terminal is probably not inside the project folder.
+Terminal is probably not inside the builder folder.
 
-Go back to **Step 3** and drag the project folder into Terminal after typing `cd `.
+Go back to **Step 3** and drag the builder folder into Terminal after typing `cd `.
 
 Then try the command again.
 
@@ -316,7 +334,7 @@ Look for a message about **Obvious Intel** and choose the option that allows it 
 
 ## Obvious opens, but a feature does nothing
 
-That may be a feature the Intel wrapper does not support yet.
+That may be a feature the wrapper does not support yet.
 
 If you report the problem, include:
 
@@ -327,9 +345,9 @@ If you report the problem, include:
 
 ## The Obvious meeting button still says recording is unavailable
 
-That is expected. The official Recall.ai Desktop Recording SDK does not support Intel Macs, and this wrapper does not impersonate that SDK.
+That is expected. Recall.ai does not provide an Intel Mac build, and **Obvious Intel.app** does not pretend that official path works.
 
-Use Tacet as the meeting-recording and recap companion while the direct Obvious-to-Tacet adapter is being developed.
+Use Tacet as the meeting-recording and recap companion. See **Tacet Companion** above. A closer in-app adapter to Tacet is still being developed.
 
 ## The build stops with an error
 
@@ -345,7 +363,7 @@ Still stuck? Message me on Substack: [mecxist.substack.com](https://mecxist.subs
 
 **Most users do not need this section.**
 
-You do not need the official Apple Silicon DMG to build Obvious Intel.
+You do not need the official Apple Silicon DMG to build **Obvious Intel.app**.
 
 This tool is included for developers who want to compare the wrapper with a current official Obvious release.
 
@@ -367,13 +385,13 @@ The tool creates:
 obvious-official-report.txt
 ```
 
-This can help identify changes in future Obvious releases that may need to be added to the Intel wrapper.
+This can help identify changes in future Obvious releases that may need to be added to the wrapper.
 
 ---
 
 # For Developers
 
-The wrapper is a **Tauri 2** application built for:
+The generated **Obvious Intel.app** is a **Tauri 2** compatibility wrapper built for:
 
 ```text
 x86_64-apple-darwin
@@ -394,12 +412,12 @@ For meeting capture and recap, install Tacet with:
 ./scripts/setup-tacet.sh
 ```
 
-The wrapper continues to expose the upstream Recall capability as unsupported while reporting whether the Tacet companion is installed. The intended next step is a narrow adapter to Tacet's documented CaptureHelper protocol, not another recorder implementation.
+**Obvious Intel.app** continues to expose the upstream Recall capability as unsupported while reporting whether the Tacet companion is installed. The intended next step is a narrow adapter to Tacet's documented CaptureHelper protocol, not another recorder implementation.
 
 Then launch **Obvious Intel.app**, enable Web Inspector/devtools if needed, and test normal product flows. Missing Tauri invocations can be implemented as they are discovered.
 
 ## Why This Exists
 
-Obvious currently targets Apple Silicon Macs. This project explores whether the parts of the product that are not inherently Apple Silicon-specific can remain usable on Intel hardware through a compatibility wrapper.
+Obvious currently targets Apple Silicon Macs. This builder explores whether the parts of the product that are not inherently Apple Silicon-specific can remain usable on Intel hardware through a compatibility wrapper.
 
 It is intended to extend access to otherwise capable Intel Macs without bypassing Obvious authentication, subscriptions, or account controls.
