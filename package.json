@@ -1,0 +1,14 @@
+{
+  "name": "obvious-intel-wrapper",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Experimental Intel macOS compatibility shell for Obvious Desktop",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build:intel": "tauri build --target x86_64-apple-darwin"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.1"
+  }
+}

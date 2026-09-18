@@ -1,0 +1,13 @@
+[package]
+name = "obvious-intel-wrapper"
+version = "0.1.0"
+description = "Experimental Intel macOS compatibility shell for Obvious Desktop"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2.6.1", features = [] }
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2.11.1", features = [] }

@@ -1,0 +1,28 @@
+{
+  "$schema": "../gen/schemas/remote-schema.json",
+  "identifier": "obvious-remote",
+  "description": "Allow the official Obvious web client to use the small compatibility IPC surface exposed by this Intel wrapper.",
+  "windows": ["main"],
+  "remote": {
+    "urls": ["https://app.obvious.ai", "https://app.obvious.ai/**"]
+  },
+  "platforms": ["macOS"],
+  "permissions": [
+    "core:default",
+    "allow-app-web-url",
+    "allow-get-config",
+    "allow-is-onboarded",
+    "allow-open-external",
+    "allow-frontend-log",
+    "allow-meeting-window-status",
+    "allow-dictation-request-access",
+    "allow-dictation-start",
+    "allow-dictation-stop",
+    "allow-quick-bar",
+    "allow-notch-bar",
+    "allow-meeting-bar",
+    "allow-perf-mark",
+    "allow-dismiss-news",
+    "allow-set-active-thread"
+  ]
+}
