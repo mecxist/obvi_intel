@@ -1,4 +1,4 @@
-# Obvious Intel Wrapper for macOS (Unofficial)
+# Obvious Intel Wrapper for macOS
 
 Built by **m.j. zilla**  
 subscribe for more tools and insights [mecxist.substack.com](https://mecxist.substack.com/)
