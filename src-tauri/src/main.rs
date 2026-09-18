@@ -3,28 +3,23 @@ use std::path::PathBuf;
 use std::process::Command;
 
 const APP_WEB_URL: &str = "https://app.obvious.ai";
-const MEETING_ADDON_BINARY: &str = "obvious-intel-meeting-capture";
 
-fn meeting_addon_path() -> Option<PathBuf> {
-    if let Ok(exe) = std::env::current_exe() {
-        if let Some(contents_dir) = exe.parent().and_then(|macos| macos.parent()) {
-            let bundled = contents_dir.join("Resources").join(MEETING_ADDON_BINARY);
-            if bundled.is_file() {
-                return Some(bundled);
-            }
+fn tacet_path() -> Option<PathBuf> {
+    if let Ok(custom) = std::env::var("TACET_DIR") {
+        let path = PathBuf::from(custom);
+        if path.is_dir() {
+            return Some(path);
         }
     }
 
-    let development = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .map(|root| {
-            root.join("addons")
-                .join("meeting-capture-intel")
-                .join("bin")
-                .join(MEETING_ADDON_BINARY)
-        });
+    let home = std::env::var("HOME").ok()?;
+    let path = PathBuf::from(home)
+        .join(".local")
+        .join("share")
+        .join("obvious-intel")
+        .join("tacet");
 
-    development.filter(|path| path.is_file())
+    path.is_dir().then_some(path)
 }
 
 #[tauri::command]
@@ -34,7 +29,7 @@ fn app_web_url() -> String {
 
 #[tauri::command]
 fn get_config() -> Value {
-    let addon_installed = meeting_addon_path().is_some();
+    let tacet_installed = tacet_path().is_some();
 
     json!({
         "appWebUrl": APP_WEB_URL,
@@ -46,8 +41,8 @@ fn get_config() -> Value {
         "version": "0.34.1-intel-compat",
         "meetingCaptureAvailable": false,
         "meeting_capture_available": false,
-        "intelMeetingCaptureAddonInstalled": addon_installed,
-        "intel_meeting_capture_addon_installed": addon_installed,
+        "tacetCompanionInstalled": tacet_installed,
+        "tacet_companion_installed": tacet_installed,
         "dictationAvailable": false,
         "intelCompatibilityBuild": true
     })
@@ -86,16 +81,18 @@ fn frontend_log() -> bool {
 
 #[tauri::command]
 fn meeting_window_status() -> Value {
-    let addon_installed = meeting_addon_path().is_some();
+    let tacet_installed = tacet_path().is_some();
 
     json!({
         "supported": false,
         "available": false,
         "reason": "Recall.ai Desktop Recording SDK does not support Intel macOS",
-        "intelAddonInstalled": addon_installed,
-        "intel_addon_installed": addon_installed,
-        "intelAddonMode": if addon_installed { "local-native-capture" } else { "not-installed" },
-        "intelAddonDocs": "docs/meeting-capture-intel.md"
+        "tacetCompanionInstalled": tacet_installed,
+        "tacet_companion_installed": tacet_installed,
+        "recommendedMeetingEngine": "Tacet",
+        "recommended_meeting_engine": "Tacet",
+        "integrationMode": "companion",
+        "integration_mode": "companion"
     })
 }
 
