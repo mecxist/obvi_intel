@@ -29,13 +29,11 @@ The wrapper is intended to support the main Obvious experience, including:
 
 ### Meeting capture on Intel
 
-Recall.ai's official Desktop Recording SDK does not support Intel Macs, so the default Obvious Intel build continues to report the upstream meeting-capture capability as unavailable.
+Recall.ai's official Desktop Recording SDK does not support Intel Macs, so Obvious Intel continues to report that upstream recording capability as unavailable.
 
-This repository now also contains an **optional experimental Intel meeting-capture add-on**. It is an independent x86_64 native capture helper built with Apple's ScreenCaptureKit and AVFoundation APIs. It can capture a selected meeting window or display, system audio, and microphone audio locally.
+Rather than maintain a second custom recorder, this project now recommends **Tacet** as the Intel meeting-recording and recap companion. Tacet is an independent MIT-licensed open-source project with explicit Intel Mac support. It captures system audio and microphone audio, can collect screen frames, uses faster-whisper on Intel, and adds transcription, speaker identification, summaries, and meeting analysis.
 
-It is not a port or replacement distribution of Recall.ai's private native SDK, and it does not currently reproduce Recall.ai's meeting detection, participant metadata, hosted transcription, or upload-token pipeline.
-
-The normal Obvious Intel build remains unchanged unless you explicitly choose the add-on build.
+Obvious Intel does not copy or rename Tacet. The integration keeps Tacet as an upstream project so it can receive its own updates and so fixes can be contributed back.
 
 ---
 
@@ -103,7 +101,7 @@ macOS may prevent a newly downloaded command file from running until you give it
 Copy and paste this into Terminal, then press **Return**:
 
 ```bash
-chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh ./scripts/build-meeting-addon.sh ./scripts/build-intel-with-meeting-addon.sh ./scripts/meeting-addon-control.sh
+chmod +x ./scripts/build-intel.sh ./scripts/inspect-official.sh ./scripts/setup-tacet.sh ./scripts/run-tacet.sh
 ```
 
 **Nothing may appear to happen after you press Return. That is normal.**
@@ -171,61 +169,42 @@ Good first things to test are:
 4. Click links that should open in your normal browser.
 5. Use Obvious normally and note anything that does not work.
 
-The official Recall.ai meeting-recording path remains unavailable on Intel. If you want to test the experimental local Intel capture add-on, see **Optional Intel Meeting Capture Add-on** below.
+The official Recall.ai meeting-recording path remains unavailable on Intel. For meeting recording and recap, see **Tacet Companion** below.
 
 ---
 
-# Optional Intel Meeting Capture Add-on
+# Tacet Companion
 
-This is optional. The normal build above does not include it.
+Tacet provides the meeting capture and recap stack instead of duplicating that functionality inside this repository.
 
-The add-on requires **macOS 13 or newer** and Apple's command-line developer tools.
-
-To build Obvious Intel with the native x86_64 capture helper packaged inside it:
+Install or update Tacet:
 
 ```bash
-./scripts/build-intel-with-meeting-addon.sh
+./scripts/setup-tacet.sh
 ```
 
-That produces the normal app bundle plus:
+By default it is placed at:
 
 ```text
-ObviousIntelWithMeetingCapture.dmg
+~/.local/share/obvious-intel/tacet
 ```
 
-The helper is deliberately controlled locally rather than granting the hosted Obvious web page unrestricted screen/microphone capture commands.
-
-Check the add-on:
+Run Tacet's own one-time setup:
 
 ```bash
-./scripts/meeting-addon-control.sh status
+cd ~/.local/share/obvious-intel/tacet
+./setup.sh
 ```
 
-Request Screen Recording and Microphone permissions:
+On an Intel Mac, Tacet selects its CPU-compatible `faster-whisper` transcription path.
+
+After setup, launch it from the Obvious Intel repository with:
 
 ```bash
-./scripts/meeting-addon-control.sh permissions
+./scripts/run-tacet.sh
 ```
 
-List capturable windows/displays:
-
-```bash
-./scripts/meeting-addon-control.sh sources
-```
-
-Start a local recording using a source id returned above:
-
-```bash
-./scripts/meeting-addon-control.sh record "window:1234" "$HOME/Desktop/obvious-recording" true
-```
-
-Press **Control-C** to stop and finalize the recording.
-
-For architecture, limitations, and developer details, see:
-
-```text
-docs/meeting-capture-intel.md
-```
+Tacet remains a separate upstream project rather than being vendored into Obvious Intel. See `docs/tacet-integration.md` for the integration architecture and the documented CaptureHelper protocol.
 
 ---
 
@@ -350,7 +329,7 @@ If you report the problem, include:
 
 That is expected. The official Recall.ai Desktop Recording SDK does not support Intel Macs, and this wrapper does not impersonate that SDK.
 
-If you built the optional Intel add-on, use the local add-on controls described above while the direct Obvious/Recall integration is still being mapped.
+Use Tacet as the meeting-recording and recap companion while the direct Obvious-to-Tacet adapter is being developed.
 
 ## The build stops with an error
 
@@ -409,13 +388,13 @@ A development compatibility workflow is:
 ./scripts/build-intel.sh
 ```
 
-To include the optional Intel meeting-capture helper:
+For meeting capture and recap, install Tacet with:
 
 ```bash
-./scripts/build-intel-with-meeting-addon.sh
+./scripts/setup-tacet.sh
 ```
 
-The wrapper continues to expose the upstream Recall capability as unsupported, while `get_config` and `meeting_window_status` report whether the independent Intel add-on is packaged. This keeps capability reporting accurate while the remaining Obvious-to-capture integration is developed.
+The wrapper continues to expose the upstream Recall capability as unsupported while reporting whether the Tacet companion is installed. The intended next step is a narrow adapter to Tacet's documented CaptureHelper protocol, not another recorder implementation.
 
 Then launch **Obvious Intel.app**, enable Web Inspector/devtools if needed, and test normal product flows. Missing Tauri invocations can be implemented as they are discovered.
 
