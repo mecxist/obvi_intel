@@ -1,7 +1,26 @@
 use serde_json::{json, Value};
+use std::path::PathBuf;
 use std::process::Command;
 
 const APP_WEB_URL: &str = "https://app.obvious.ai";
+
+fn tacet_path() -> Option<PathBuf> {
+    if let Ok(custom) = std::env::var("TACET_DIR") {
+        let path = PathBuf::from(custom);
+        if path.is_dir() {
+            return Some(path);
+        }
+    }
+
+    let home = std::env::var("HOME").ok()?;
+    let path = PathBuf::from(home)
+        .join(".local")
+        .join("share")
+        .join("obvious-intel")
+        .join("tacet");
+
+    path.is_dir().then_some(path)
+}
 
 #[tauri::command]
 fn app_web_url() -> String {
@@ -10,6 +29,8 @@ fn app_web_url() -> String {
 
 #[tauri::command]
 fn get_config() -> Value {
+    let tacet_installed = tacet_path().is_some();
+
     json!({
         "appWebUrl": APP_WEB_URL,
         "app_web_url": APP_WEB_URL,
@@ -20,6 +41,8 @@ fn get_config() -> Value {
         "version": "0.34.1-intel-compat",
         "meetingCaptureAvailable": false,
         "meeting_capture_available": false,
+        "tacetCompanionInstalled": tacet_installed,
+        "tacet_companion_installed": tacet_installed,
         "dictationAvailable": false,
         "intelCompatibilityBuild": true
     })
@@ -27,7 +50,6 @@ fn get_config() -> Value {
 
 #[tauri::command]
 fn is_onboarded() -> bool {
-    // Skip native-only onboarding. Account/workspace onboarding still lives in the web app.
     true
 }
 
@@ -54,16 +76,23 @@ fn open_external(target: String) -> Result<(), String> {
 
 #[tauri::command]
 fn frontend_log() -> bool {
-    // Payload fields are intentionally ignored in the compatibility build.
     true
 }
 
 #[tauri::command]
 fn meeting_window_status() -> Value {
+    let tacet_installed = tacet_path().is_some();
+
     json!({
         "supported": false,
         "available": false,
-        "reason": "Recall.ai Desktop Recording SDK does not support Intel macOS"
+        "reason": "Recall.ai Desktop Recording SDK does not support Intel macOS",
+        "tacetCompanionInstalled": tacet_installed,
+        "tacet_companion_installed": tacet_installed,
+        "recommendedMeetingEngine": "Tacet",
+        "recommended_meeting_engine": "Tacet",
+        "integrationMode": "companion",
+        "integration_mode": "companion"
     })
 }
 
