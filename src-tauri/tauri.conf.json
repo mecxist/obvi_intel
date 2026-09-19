@@ -7,20 +7,7 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "windows": [
-      {
-        "label": "main",
-        "title": "Obvious",
-        "url": "https://app.obvious.ai",
-        "width": 1440,
-        "height": 920,
-        "minWidth": 900,
-        "minHeight": 640,
-        "resizable": true,
-        "fullscreen": false,
-        "devtools": true
-      }
-    ],
+    "windows": [],
     "security": {
       "capabilities": ["obvious-remote"]
     }

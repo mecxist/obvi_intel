@@ -133,6 +133,29 @@ fn set_active_thread() -> bool { true }
 
 fn main() {
     tauri::Builder::default()
+        .setup(|app| {
+            let mut builder = tauri::WebviewWindowBuilder::new(
+                app,
+                "main",
+                tauri::WebviewUrl::External(
+                    APP_WEB_URL.parse().expect("APP_WEB_URL must be a valid URL"),
+                ),
+            )
+            .title("Obvious")
+            .inner_size(1440.0, 920.0)
+            .min_inner_size(900.0, 640.0)
+            .resizable(true)
+            .fullscreen(false)
+            .devtools(true);
+
+            #[cfg(target_os = "macos")]
+            {
+                builder = builder.with_webview_configuration(microphone::webview_configuration());
+            }
+
+            builder.build()?;
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             app_web_url,
             get_config,

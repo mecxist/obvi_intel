@@ -4,11 +4,15 @@ use std::time::Duration;
 #[cfg(target_os = "macos")]
 use block2::RcBlock;
 #[cfg(target_os = "macos")]
+use objc2::rc::Retained;
+#[cfg(target_os = "macos")]
 use objc2::runtime::{AnyClass, Bool};
 #[cfg(target_os = "macos")]
 use objc2::{class, msg_send};
 #[cfg(target_os = "macos")]
-use objc2_foundation::NSString;
+use objc2_foundation::{MainThreadMarker, NSNumber, NSString};
+#[cfg(target_os = "macos")]
+use objc2_web_kit::WKWebViewConfiguration;
 
 #[cfg(target_os = "macos")]
 #[link(name = "AVFoundation", kind = "framework")]
@@ -18,6 +22,20 @@ const AUDIO_MEDIA_TYPE: &str = "soun";
 const STATUS_AUTHORIZED: i64 = 3;
 const STATUS_DENIED: i64 = 2;
 const STATUS_RESTRICTED: i64 = 1;
+
+/// WKWebView hides `navigator.mediaDevices` unless this private preference is on.
+#[cfg(target_os = "macos")]
+pub fn webview_configuration() -> Retained<WKWebViewConfiguration> {
+    let mtm = MainThreadMarker::new().expect("WKWebView configuration requires the main thread");
+    let config = unsafe { WKWebViewConfiguration::new(mtm) };
+    unsafe {
+        let preferences = config.preferences();
+        let yes = NSNumber::numberWithBool(true);
+        let key = NSString::from_str("mediaDevicesEnabled");
+        let _: () = msg_send![&*preferences, setValue: &*yes, forKey: &*key];
+    }
+    config
+}
 
 /// Ask macOS for microphone access so chat speech-to-text can use getUserMedia.
 pub fn request_access() -> bool {
