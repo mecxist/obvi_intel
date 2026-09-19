@@ -37,6 +37,7 @@ The builder creates an x86_64 macOS application locally on your Intel Mac.
 - projects and agents
 - files and workbooks
 - links that need to open in your browser
+- chat speech-to-text (microphone dictation)
 - supported desktop features used by the Obvious web interface
 
 ### Meeting capture on Intel
@@ -50,6 +51,18 @@ It is not a drop-in replacement for Recall inside the Obvious meeting button. **
 Tacet is an independent MIT-licensed project with explicit Intel Mac support. It can capture system audio and microphone audio, collect screen frames, transcribe with faster-whisper on Intel, and add speaker identification, summaries, and meeting analysis.
 
 The builder does not copy or rename Tacet. Tacet stays a separate upstream project so it can receive its own updates.
+
+### Chat speech-to-text
+
+The official Obvious site in a normal browser already had working chat dictation. Early Intel wrapper builds did not, and showed:
+
+```text
+Microphone is not supported in this browser
+```
+
+That message came from the Obvious web app, not from macOS. Chat dictation needs `navigator.mediaDevices.getUserMedia`. The WKWebView used by this wrapper leaves that API off unless WebKit's private `mediaDevicesEnabled` preference is set **before** the window is created.
+
+The builder now creates the main window in Rust with that preference on, then still asks macOS for microphone access. Rebuild **Obvious Intel.app** from current `main`, quit any older copy, and open the new app. macOS may prompt for the microphone the first time you use dictation.
 
 ---
 
@@ -342,6 +355,12 @@ If you report the problem, include:
 - what you expected to happen
 - what happened instead
 - any error message you saw
+
+## Chat speech-to-text says the microphone is not supported
+
+That was a wrapper bug, not an Obvious account problem. Older builds never turned on WebKit's media-devices API, so the chat UI thought it was running in a browser without a microphone.
+
+Rebuild **Obvious Intel.app** from current `main`, quit the old app completely, and open the new one. Allow microphone access if macOS asks. See **Chat speech-to-text** above.
 
 ## The Obvious meeting button still says recording is unavailable
 
